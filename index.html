@@ -314,21 +314,24 @@
                 <h2><span class="emoji">⚙️</span> GitHub Configuration</h2>
                 <div class="input-group">
                     <label for="githubToken">GitHub Personal Access Token:</label>
-                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" oninput="autoSaveSettings()">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="input-group">
                         <label for="githubUsername">GitHub Username:</label>
-                        <input type="text" id="githubUsername" placeholder="YourGitHubUsername">
+                        <input type="text" id="githubUsername" placeholder="YourGitHubUsername" oninput="autoSaveSettings()">
                     </div>
                     <div class="input-group">
                         <label for="privateRepoName">Private Repository Name:</label>
-                        <input type="text" id="privateRepoName" placeholder="stream-rewards-data">
+                        <input type="text" id="privateRepoName" placeholder="stream-rewards-data" oninput="autoSaveSettings()">
                     </div>
                 </div>
-                <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
-                <button class="btn btn-secondary" onclick="testConnection()">🔗 Test Connection</button>
-                <button class="btn btn-danger" onclick="clearSettings()">🗑️ Clear Settings</button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+                    <button class="btn btn-secondary" onclick="testConnection()">🔗 Test Connection</button>
+                    <button class="btn btn-danger" onclick="clearSettings()">🗑️ Clear Settings</button>
+                    <span id="autoSaveStatus" style="color: #28a745; font-size: 0.9em; opacity: 0;">✅ Auto-saved</span>
+                </div>
             </div>
 
             <!-- URL Categories Grid -->
@@ -447,6 +450,11 @@
                 document.getElementById('githubToken').value = settings.githubToken || '';
                 document.getElementById('githubUsername').value = settings.githubUsername || '';
                 document.getElementById('privateRepoName').value = settings.privateRepoName || '';
+                
+                // Show confirmation that cached settings were loaded
+                if (settings.githubToken || settings.githubUsername || settings.privateRepoName) {
+                    showStatus('🔒 Cached settings loaded successfully! Auto-save is enabled.', 'success');
+                }
             }
         }
 
@@ -458,6 +466,24 @@
                 document.getElementById('privateRepoName').value = '';
                 showStatus('Settings cleared! 🧹', 'info');
             }
+        }
+
+        // Auto-save settings as user types
+        function autoSaveSettings() {
+            const settings = {
+                githubToken: document.getElementById('githubToken').value,
+                githubUsername: document.getElementById('githubUsername').value,
+                privateRepoName: document.getElementById('privateRepoName').value
+            };
+
+            localStorage.setItem('streamRewardsSettings', JSON.stringify(settings));
+            
+            // Show brief auto-save confirmation
+            const status = document.getElementById('autoSaveStatus');
+            status.style.opacity = '1';
+            setTimeout(() => {
+                status.style.opacity = '0';
+            }, 1500);
         }
 
         // URL Database Management
