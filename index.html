@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Rewards - Anonymous URL Manager v5.0.1</title>
+    <title>Stream Rewards - Anonymous URL Manager v5.0.2</title>
     <style>
         * {
             margin: 0;
@@ -305,7 +305,7 @@
         <div class="header">
             <h1>🎯 Stream Rewards Manager</h1>
             <p>Anonymous URL Management System</p>
-            <div class="version-badge">Version 5.0.1 - Migration Fix</div>
+            <div class="version-badge">Version 5.0.2 - Connection Logic Fix</div>
         </div>
 
         <div class="main-content">
@@ -418,15 +418,15 @@
     </div>
 
     <script>
-        // Version 5.0.1 - Migration Fix for privateRepoName -> publicRepoName  
-        console.log('🚀 Stream Rewards Manager v5.0.1 Loading...');
+        // Version 5.0.2 - Connection Logic Fix (read form values first)
+        console.log('🚀 Stream Rewards Manager v5.0.2 Loading...');
         
         // Clear any existing declarations (cache fix)
         if (typeof urlDatabase !== 'undefined') {
             console.log('⚠️ Clearing existing urlDatabase for fresh start');
         }
         
-        // Global state - Version 5.0.1
+        // Global state - Version 5.0.2
         var urlDatabase = {
             follows: [],
             subs: [],
@@ -859,7 +859,7 @@
         function generateManifestObject() {
             return {
                 generated: new Date().toISOString(),
-                version: "5.0.1",
+                version: "5.0.2",
                 system: "anonymous_url_management",
                 follows: {
                     count: urlDatabase.follows.length,
@@ -994,21 +994,27 @@
         async function testConnection() {
             const settings = JSON.parse(localStorage.getItem('streamRewardsSettings') || '{}');
             
-            // Handle migration: check both old and new repo name fields
-            const savedRepoName = settings.publicRepoName || settings.privateRepoName;
-            
-            if (!settings.githubToken || !settings.githubUsername || !savedRepoName) {
-                showStatus('Please fill in all GitHub settings first! ⚙️', 'error');
-                return;
-            }
-
-            // Get current values from form (in case they haven't been saved yet)
+            // Get current values from form FIRST (prioritize what user typed)
             const currentToken = document.getElementById('githubToken').value || settings.githubToken;
             const currentUsername = document.getElementById('githubUsername').value || settings.githubUsername;
-            const currentRepo = document.getElementById('publicRepoName').value || savedRepoName;
+            const currentRepo = document.getElementById('publicRepoName').value || settings.publicRepoName || settings.privateRepoName;
+
+            console.log('🔍 Testing connection with:', {
+                token: !!currentToken, 
+                username: !!currentUsername, 
+                repo: !!currentRepo,
+                tokenSource: document.getElementById('githubToken').value ? 'form' : 'cache',
+                usernameSource: document.getElementById('githubUsername').value ? 'form' : 'cache',
+                repoSource: document.getElementById('publicRepoName').value ? 'form' : 'cache'
+            });
 
             if (!currentToken || !currentUsername || !currentRepo) {
                 showStatus('Please fill in all GitHub settings first! ⚙️', 'error');
+                console.log('❌ Missing settings:', {
+                    token: !!currentToken, 
+                    username: !!currentUsername, 
+                    repo: !!currentRepo
+                });
                 return;
             }
 
