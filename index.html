@@ -305,7 +305,7 @@
         <div class="header">
             <h1>🎯 Stream Rewards Manager</h1>
             <p>Anonymous URL Management System</p>
-            <div class="version-badge">Version 5.0.2 - Connection Logic Fix</div>
+            <div class="version-badge">Version 5.0.3 - Detailed Form Debug</div>
         </div>
 
         <div class="main-content">
@@ -999,6 +999,27 @@
             const currentUsername = document.getElementById('githubUsername').value || settings.githubUsername;
             const currentRepo = document.getElementById('publicRepoName').value || settings.publicRepoName || settings.privateRepoName;
 
+            // DETAILED DEBUGGING - Let's see what's actually in the form fields
+            const tokenElement = document.getElementById('githubToken');
+            const usernameElement = document.getElementById('githubUsername');
+            const repoElement = document.getElementById('publicRepoName');
+            
+            console.log('🔍 FORM FIELD DEBUG:');
+            console.log('Token element:', tokenElement);
+            console.log('Token value:', tokenElement ? `"${tokenElement.value}"` : 'ELEMENT NOT FOUND');
+            console.log('Token length:', tokenElement ? tokenElement.value.length : 'N/A');
+            
+            console.log('Username element:', usernameElement);
+            console.log('Username value:', usernameElement ? `"${usernameElement.value}"` : 'ELEMENT NOT FOUND');
+            console.log('Username length:', usernameElement ? usernameElement.value.length : 'N/A');
+            
+            console.log('Repo element:', repoElement);
+            console.log('Repo value:', repoElement ? `"${repoElement.value}"` : 'ELEMENT NOT FOUND');
+            console.log('Repo length:', repoElement ? repoElement.value.length : 'N/A');
+            
+            console.log('🔍 CACHED SETTINGS:');
+            console.log('Settings object:', settings);
+            
             console.log('🔍 Testing connection with:', {
                 token: !!currentToken, 
                 username: !!currentUsername, 
