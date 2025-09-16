@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Rewards - Anonymous URL Manager v5.0.0</title>
+    <title>Stream Rewards - Anonymous URL Manager v5.0.1</title>
     <style>
         * {
             margin: 0;
@@ -305,7 +305,7 @@
         <div class="header">
             <h1>🎯 Stream Rewards Manager</h1>
             <p>Anonymous URL Management System</p>
-            <div class="version-badge">Version 5.0.0 - Public Manifest (No API Keys!)</div>
+            <div class="version-badge">Version 5.0.1 - Migration Fix</div>
         </div>
 
         <div class="main-content">
@@ -418,15 +418,15 @@
     </div>
 
     <script>
-        // Version 5.0.0 - Public Manifest (No API Keys!)
-        console.log('🚀 Stream Rewards Manager v5.0.0 Loading...');
+        // Version 5.0.1 - Migration Fix for privateRepoName -> publicRepoName  
+        console.log('🚀 Stream Rewards Manager v5.0.1 Loading...');
         
         // Clear any existing declarations (cache fix)
         if (typeof urlDatabase !== 'undefined') {
             console.log('⚠️ Clearing existing urlDatabase for fresh start');
         }
         
-        // Global state - Version 5.0.0
+        // Global state - Version 5.0.1
         var urlDatabase = {
             follows: [],
             subs: [],
@@ -458,10 +458,22 @@
                 const settings = JSON.parse(saved);
                 document.getElementById('githubToken').value = settings.githubToken || '';
                 document.getElementById('githubUsername').value = settings.githubUsername || '';
-                document.getElementById('publicRepoName').value = settings.publicRepoName || '';
                 
-                // Show confirmation that cached settings were loaded
-                if (settings.githubToken || settings.githubUsername || settings.publicRepoName) {
+                // Migration: Handle old privateRepoName -> publicRepoName
+                const repoName = settings.publicRepoName || settings.privateRepoName || '';
+                document.getElementById('publicRepoName').value = repoName;
+                
+                // If we migrated, save the updated settings
+                if (settings.privateRepoName && !settings.publicRepoName) {
+                    console.log('🔄 Migrating privateRepoName to publicRepoName:', settings.privateRepoName);
+                    const updatedSettings = {
+                        githubToken: settings.githubToken || '',
+                        githubUsername: settings.githubUsername || '',
+                        publicRepoName: settings.privateRepoName
+                    };
+                    localStorage.setItem('streamRewardsSettings', JSON.stringify(updatedSettings));
+                    showStatus('🔄 Settings migrated to Version 5.0.0 (Public Repository)! ✨', 'success');
+                } else if (settings.githubToken || settings.githubUsername || repoName) {
                     showStatus('🔒 Cached settings loaded successfully! Auto-save is enabled.', 'success');
                 }
             }
@@ -847,7 +859,7 @@
         function generateManifestObject() {
             return {
                 generated: new Date().toISOString(),
-                version: "5.0.0",
+                version: "5.0.1",
                 system: "anonymous_url_management",
                 follows: {
                     count: urlDatabase.follows.length,
@@ -888,10 +900,25 @@
         async function generatePrivateManifest() {
             const settings = JSON.parse(localStorage.getItem('streamRewardsSettings') || '{}');
             
-            if (!settings.githubToken || !settings.githubUsername || !settings.publicRepoName) {
+            // Handle migration: check both old and new repo name fields
+            const repoName = settings.publicRepoName || settings.privateRepoName;
+            
+            if (!settings.githubToken || !settings.githubUsername || !repoName) {
                 showStatus('Please configure GitHub settings first! ⚙️', 'error');
+                console.log('❌ Missing settings:', {
+                    token: !!settings.githubToken, 
+                    username: !!settings.githubUsername, 
+                    repo: !!repoName
+                });
                 return;
             }
+            
+            // Use migrated settings for the upload
+            const migratedSettings = {
+                githubToken: settings.githubToken,
+                githubUsername: settings.githubUsername,
+                publicRepoName: repoName
+            };
 
             const totalUrls = urlDatabase.follows.length + urlDatabase.subs.length + urlDatabase.special.length;
             if (totalUrls === 0) {
@@ -906,7 +933,7 @@
                 const manifestContent = JSON.stringify(manifest, null, 2);
                 
                 // Upload to public GitHub repository
-                await uploadToGitHub(settings, manifestContent);
+                await uploadToGitHub(migratedSettings, manifestContent);
                 
                 showStatus(`🎉 Public manifest generated and uploaded successfully! Contains ${totalUrls} anonymous URLs.`, 'success');
                 
@@ -967,7 +994,10 @@
         async function testConnection() {
             const settings = JSON.parse(localStorage.getItem('streamRewardsSettings') || '{}');
             
-            if (!settings.githubToken || !settings.githubUsername || !settings.publicRepoName) {
+            // Handle migration: check both old and new repo name fields
+            const savedRepoName = settings.publicRepoName || settings.privateRepoName;
+            
+            if (!settings.githubToken || !settings.githubUsername || !savedRepoName) {
                 showStatus('Please fill in all GitHub settings first! ⚙️', 'error');
                 return;
             }
@@ -975,7 +1005,7 @@
             // Get current values from form (in case they haven't been saved yet)
             const currentToken = document.getElementById('githubToken').value || settings.githubToken;
             const currentUsername = document.getElementById('githubUsername').value || settings.githubUsername;
-            const currentRepo = document.getElementById('publicRepoName').value || settings.publicRepoName;
+            const currentRepo = document.getElementById('publicRepoName').value || savedRepoName;
 
             if (!currentToken || !currentUsername || !currentRepo) {
                 showStatus('Please fill in all GitHub settings first! ⚙️', 'error');
