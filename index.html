@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Rewards - Anonymous URL Manager v4.0.2</title>
+    <title>Stream Rewards - Anonymous URL Manager v4.0.3</title>
     <style>
         * {
             margin: 0;
@@ -305,7 +305,7 @@
         <div class="header">
             <h1>🎯 Stream Rewards Manager</h1>
             <p>Anonymous URL Management System</p>
-            <div class="version-badge">Version 4.0.2 - JavaScript Cache Fix</div>
+            <div class="version-badge">Version 4.0.3 - Connection Debug</div>
         </div>
 
         <div class="main-content">
@@ -417,15 +417,15 @@
     </div>
 
     <script>
-        // Version 4.0.1 - Cache fix
-        console.log('🚀 Stream Rewards Manager v4.0.1 Loading...');
+        // Version 4.0.3 - Connection Debug
+        console.log('🚀 Stream Rewards Manager v4.0.3 Loading...');
         
         // Clear any existing declarations (cache fix)
         if (typeof urlDatabase !== 'undefined') {
             console.log('⚠️ Clearing existing urlDatabase for fresh start');
         }
         
-        // Global state - Version 4.0.1
+        // Global state - Version 4.0.3
         var urlDatabase = {
             follows: [],
             subs: [],
@@ -659,7 +659,7 @@
         function generateManifestObject() {
             return {
                 generated: new Date().toISOString(),
-                version: "4.0.2",
+                version: "4.0.3",
                 system: "anonymous_url_management",
                 follows: {
                     count: urlDatabase.follows.length,
@@ -813,11 +813,17 @@
                 console.log('Response status:', response.status);
                 console.log('Response headers:', response.headers);
 
+                console.log('Response.ok:', response.ok);
                 if (response.ok) {
+                    console.log('✅ Parsing JSON response...');
                     const repoData = await response.json();
-                    console.log('Repository data:', repoData);
+                    console.log('✅ Repository data:', repoData);
+                    console.log('✅ Repository private:', repoData.private);
+                    console.log('✅ Repository full_name:', repoData.full_name);
                     const isPrivate = repoData.private ? 'Private ✅' : 'Public ⚠️';
+                    console.log('✅ About to call showStatus with:', `🎉 GitHub connection successful! Repository: ${isPrivate} (${repoData.full_name})`);
                     showStatus(`🎉 GitHub connection successful! Repository: ${isPrivate} (${repoData.full_name})`, 'success');
+                    console.log('✅ showStatus called successfully');
                 } else {
                     let errorMessage = `HTTP ${response.status}`;
                     try {
@@ -842,15 +848,25 @@
 
         // Show status message
         function showStatus(message, type = 'info') {
+            console.log('🔥 showStatus called with:', message, 'type:', type);
             const statusDiv = document.getElementById('statusMessage');
+            console.log('🔥 statusDiv element:', statusDiv);
+            if (!statusDiv) {
+                console.error('❌ statusMessage element not found!');
+                return;
+            }
             statusDiv.className = `status-message status-${type}`;
             statusDiv.textContent = message;
             statusDiv.style.display = 'block';
+            console.log('🔥 Status message displayed:', statusDiv.style.display);
+            console.log('🔥 Status message content:', statusDiv.textContent);
 
             // Auto-hide success messages after 5 seconds
             if (type === 'success') {
+                console.log('🔥 Setting 5 second auto-hide for success message');
                 setTimeout(() => {
                     statusDiv.style.display = 'none';
+                    console.log('🔥 Auto-hide executed');
                 }, 5000);
             }
         }
