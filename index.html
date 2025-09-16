@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Rewards - Anonymous URL Manager v4.0.3</title>
+    <title>Stream Rewards - Anonymous URL Manager v4.1.0</title>
     <style>
         * {
             margin: 0;
@@ -305,7 +305,7 @@
         <div class="header">
             <h1>🎯 Stream Rewards Manager</h1>
             <p>Anonymous URL Management System</p>
-            <div class="version-badge">Version 4.0.3 - Connection Debug</div>
+            <div class="version-badge">Version 4.1.0 - Duplicate Protection & Import Analytics</div>
         </div>
 
         <div class="main-content">
@@ -396,6 +396,7 @@
                             <option value="special">💎 Special Rewards</option>
                         </select>
                         <button class="btn btn-success" onclick="bulkImportUrls()">📥 Import URLs</button>
+                        <button class="btn btn-secondary" onclick="findAndCleanDuplicates()">🧹 Find Duplicates</button>
                     </div>
                 </div>
             </div>
@@ -417,15 +418,15 @@
     </div>
 
     <script>
-        // Version 4.0.3 - Connection Debug
-        console.log('🚀 Stream Rewards Manager v4.0.3 Loading...');
+        // Version 4.1.0 - Duplicate Protection & Import Analytics
+        console.log('🚀 Stream Rewards Manager v4.1.0 Loading...');
         
         // Clear any existing declarations (cache fix)
         if (typeof urlDatabase !== 'undefined') {
             console.log('⚠️ Clearing existing urlDatabase for fresh start');
         }
         
-        // Global state - Version 4.0.3
+        // Global state - Version 4.1.0
         var urlDatabase = {
             follows: [],
             subs: [],
@@ -512,7 +513,7 @@
             return catboxPattern.test(url);
         }
 
-        // Add URL to category
+        // Add URL to category with enhanced duplicate detection
         function addUrl(category) {
             const inputId = category === 'follows' ? 'followUrlInput' : 
                            category === 'subs' ? 'subUrlInput' : 'specialUrlInput';
@@ -528,16 +529,31 @@
                 return;
             }
 
+            // Check for duplicates in target category
             if (urlDatabase[category].includes(url)) {
-                showStatus('This URL is already in the ' + category + ' category! 🔄', 'error');
+                showStatus(`🔄 Duplicate detected: This URL is already in ${category} category!`, 'error');
                 return;
             }
 
+            // Check for duplicates in OTHER categories
+            let foundInOtherCategory = null;
+            Object.keys(urlDatabase).forEach(cat => {
+                if (cat !== category && urlDatabase[cat].includes(url)) {
+                    foundInOtherCategory = cat;
+                }
+            });
+
+            if (foundInOtherCategory) {
+                showStatus(`🔄 Cross-category duplicate: This URL already exists in ${foundInOtherCategory} category!`, 'error');
+                return;
+            }
+
+            // URL is unique - add it!
             urlDatabase[category].push(url);
             document.getElementById(inputId).value = '';
             saveUrlDatabase();
             updateDisplayForCategory(category);
-            showStatus(`URL added to ${category} successfully! ✅`, 'success');
+            showStatus(`✅ URL added to ${category}! Total: ${urlDatabase[category].length} URLs`, 'success');
         }
 
         // Remove URL from category
@@ -550,7 +566,7 @@
             }
         }
 
-        // Bulk import URLs
+        // Bulk import URLs with advanced duplicate detection
         function bulkImportUrls() {
             const urls = document.getElementById('bulkUrlsInput').value
                 .split('\n')
@@ -558,25 +574,197 @@
                 .filter(url => url.length > 0);
             
             const category = document.getElementById('importCategory').value;
+            
+            // Detailed analytics
             let imported = 0;
-            let skipped = 0;
+            let duplicatesInCategory = 0;
+            let duplicatesInOtherCategories = 0;
+            let invalidUrls = 0;
+            let emptyLines = 0;
+            
+            // Track which URLs are duplicates and where
+            let duplicateDetails = [];
+            let invalidDetails = [];
 
-            urls.forEach(url => {
-                if (validateCatboxUrl(url) && !urlDatabase[category].includes(url)) {
-                    urlDatabase[category].push(url);
-                    imported++;
-                } else {
-                    skipped++;
+            console.log(`🔍 Processing ${urls.length} URLs for ${category} category...`);
+            
+            urls.forEach((url, index) => {
+                if (!url || url.length === 0) {
+                    emptyLines++;
+                    return;
                 }
+
+                if (!validateCatboxUrl(url)) {
+                    invalidUrls++;
+                    invalidDetails.push(`Line ${index + 1}: ${url}`);
+                    return;
+                }
+
+                // Check for duplicates in target category
+                if (urlDatabase[category].includes(url)) {
+                    duplicatesInCategory++;
+                    duplicateDetails.push(`${url} (already in ${category})`);
+                    return;
+                }
+
+                // Check for duplicates in OTHER categories
+                let foundInOtherCategory = null;
+                Object.keys(urlDatabase).forEach(cat => {
+                    if (cat !== category && urlDatabase[cat].includes(url)) {
+                        foundInOtherCategory = cat;
+                    }
+                });
+
+                if (foundInOtherCategory) {
+                    duplicatesInOtherCategories++;
+                    duplicateDetails.push(`${url} (already in ${foundInOtherCategory})`);
+                    return;
+                }
+
+                // URL is unique - add it!
+                urlDatabase[category].push(url);
+                imported++;
             });
 
+            // Save and update display if any were imported
             if (imported > 0) {
                 saveUrlDatabase();
                 updateDisplayForCategory(category);
             }
 
+            // Clear the input
             document.getElementById('bulkUrlsInput').value = '';
-            showStatus(`Bulk import complete! ✅ ${imported} URLs added, ${skipped} skipped/invalid`, 'success');
+            
+            // Generate detailed report
+            console.log('📊 BULK IMPORT REPORT:');
+            console.log(`✅ Imported: ${imported}`);
+            console.log(`🔄 Duplicates in ${category}: ${duplicatesInCategory}`);
+            console.log(`🔄 Duplicates in other categories: ${duplicatesInOtherCategories}`);
+            console.log(`❌ Invalid URLs: ${invalidUrls}`);
+            console.log(`⚪ Empty lines: ${emptyLines}`);
+            
+            if (duplicateDetails.length > 0) {
+                console.log('🔍 Duplicate Details:', duplicateDetails);
+            }
+            if (invalidDetails.length > 0) {
+                console.log('❌ Invalid URL Details:', invalidDetails);
+            }
+
+            // Create user-friendly status message
+            let statusMessage = `📊 Bulk Import Report:\n`;
+            statusMessage += `✅ Added ${imported} new URLs to ${category}\n`;
+            
+            const totalSkipped = duplicatesInCategory + duplicatesInOtherCategories + invalidUrls;
+            if (totalSkipped > 0) {
+                statusMessage += `🔄 Skipped ${totalSkipped} URLs:\n`;
+                if (duplicatesInCategory > 0) statusMessage += `  • ${duplicatesInCategory} already in ${category}\n`;
+                if (duplicatesInOtherCategories > 0) statusMessage += `  • ${duplicatesInOtherCategories} in other categories\n`;
+                if (invalidUrls > 0) statusMessage += `  • ${invalidUrls} invalid format\n`;
+            }
+            
+            statusMessage += `\n📈 ${category} now has ${urlDatabase[category].length} total URLs`;
+
+            const messageType = imported > 0 ? 'success' : (totalSkipped > 0 ? 'info' : 'error');
+            showStatus(statusMessage, messageType);
+        }
+
+        // Find and clean existing duplicates across all categories
+        function findAndCleanDuplicates() {
+            console.log('🧹 Scanning for existing duplicates across all categories...');
+            
+            let duplicatesFound = [];
+            let urlMap = {}; // Track where each URL appears
+            
+            // Build a map of all URLs and their locations
+            Object.keys(urlDatabase).forEach(category => {
+                urlDatabase[category].forEach((url, index) => {
+                    if (!urlMap[url]) {
+                        urlMap[url] = [];
+                    }
+                    urlMap[url].push({ category, index });
+                });
+            });
+            
+            // Find URLs that appear in multiple places
+            Object.keys(urlMap).forEach(url => {
+                if (urlMap[url].length > 1) {
+                    duplicatesFound.push({
+                        url: url,
+                        locations: urlMap[url]
+                    });
+                }
+            });
+            
+            if (duplicatesFound.length === 0) {
+                showStatus('🎉 No duplicates found! Your URL database is clean.', 'success');
+                return;
+            }
+            
+            // Generate duplicate report
+            let report = `🔍 Found ${duplicatesFound.length} URLs with duplicates:\n\n`;
+            let totalDuplicateInstances = 0;
+            
+            duplicatesFound.forEach(duplicate => {
+                totalDuplicateInstances += duplicate.locations.length - 1; // Don't count the original
+                report += `🔗 ${duplicate.url}\n`;
+                duplicate.locations.forEach(loc => {
+                    report += `   • In ${loc.category} category\n`;
+                });
+                report += `\n`;
+            });
+            
+            report += `📊 Summary:\n`;
+            report += `• ${duplicatesFound.length} unique URLs have duplicates\n`;
+            report += `• ${totalDuplicateInstances} duplicate instances found\n`;
+            report += `• Total URLs before cleanup: ${Object.values(urlDatabase).flat().length}\n`;
+            
+            console.log('🔍 DUPLICATE SCAN REPORT:');
+            console.log(report);
+            
+            // Ask user if they want to clean them up
+            const confirmCleanup = confirm(`Found ${duplicatesFound.length} URLs with duplicates (${totalDuplicateInstances} duplicate instances).\n\nClean up duplicates? This will:\n• Keep the first instance of each URL\n• Remove all duplicate copies\n• Update your database\n\nClick OK to clean up, Cancel to just view the report.`);
+            
+            if (confirmCleanup) {
+                cleanupDuplicates(duplicatesFound, urlMap);
+            } else {
+                showStatus(report, 'info');
+            }
+        }
+        
+        // Clean up duplicates by keeping the first instance of each URL
+        function cleanupDuplicates(duplicatesFound, urlMap) {
+            let removedCount = 0;
+            let newDatabase = {
+                follows: [...urlDatabase.follows],
+                subs: [...urlDatabase.subs],
+                special: [...urlDatabase.special]
+            };
+            
+            duplicatesFound.forEach(duplicate => {
+                const url = duplicate.url;
+                const locations = duplicate.locations;
+                
+                // Keep the first occurrence, remove the rest
+                for (let i = 1; i < locations.length; i++) {
+                    const loc = locations[i];
+                    const index = newDatabase[loc.category].indexOf(url);
+                    if (index > -1) {
+                        newDatabase[loc.category].splice(index, 1);
+                        removedCount++;
+                    }
+                }
+            });
+            
+            // Update the database
+            urlDatabase = newDatabase;
+            saveUrlDatabase();
+            updateAllDisplays();
+            
+            const finalCount = Object.values(urlDatabase).flat().length;
+            const report = `🧹 Cleanup Complete!\n\n✅ Removed ${removedCount} duplicate instances\n📊 Total URLs after cleanup: ${finalCount}\n\n${duplicatesFound.length} unique URLs now have single instances.`;
+            
+            console.log('🧹 CLEANUP COMPLETE:', report);
+            showStatus(report, 'success');
         }
 
         // Update display for specific category
@@ -659,7 +847,7 @@
         function generateManifestObject() {
             return {
                 generated: new Date().toISOString(),
-                version: "4.0.3",
+                version: "4.1.0",
                 system: "anonymous_url_management",
                 follows: {
                     count: urlDatabase.follows.length,
