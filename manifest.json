@@ -1,0 +1,180 @@
+{
+  "generated": "2025-09-16T16:19:33.960Z",
+  "version": "5.0.2",
+  "system": "anonymous_url_management",
+  "follows": {
+    "count": 13,
+    "urls": [
+      {
+        "url": "https://files.catbox.moe/uj6i1h.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/r4em85.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/4uwa99.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/qgzy6f.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/5s6x8k.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/ehqkvk.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/4vhtxp.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/bfylb9.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/v0uyhc.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/hdzxxu.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/h4jq4i.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/hijm86.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/fg3sut.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      }
+    ]
+  },
+  "subs": {
+    "count": 14,
+    "urls": [
+      {
+        "url": "https://files.catbox.moe/g0z7e1.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/qiyqwp.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/5ij2xl.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/07busi.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/23zfhj.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/c909i1.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/ikuobu.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/iguz0k.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/s8m66h.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/z9qdi4.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/6wr9th.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/jcdprx.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/e6gmej.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      },
+      {
+        "url": "https://files.catbox.moe/sz0b3v.jpg",
+        "source": "catbox_anonymous",
+        "type": "image"
+      }
+    ]
+  },
+  "special": {
+    "count": 5,
+    "urls": [
+      {
+        "url": "https://files.catbox.moe/rgtr23.mp4",
+        "source": "catbox_anonymous",
+        "type": "video"
+      },
+      {
+        "url": "https://files.catbox.moe/ezl4i5.mp4",
+        "source": "catbox_anonymous",
+        "type": "video"
+      },
+      {
+        "url": "https://files.catbox.moe/una4l6.mp4",
+        "source": "catbox_anonymous",
+        "type": "video"
+      },
+      {
+        "url": "https://files.catbox.moe/e9s6kg.mp4",
+        "source": "catbox_anonymous",
+        "type": "video"
+      },
+      {
+        "url": "https://files.catbox.moe/ifv2vo.mp4",
+        "source": "catbox_anonymous",
+        "type": "video"
+      }
+    ]
+  }
+}
