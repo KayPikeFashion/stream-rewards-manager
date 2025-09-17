@@ -1,5 +1,5 @@
 {
-  "generated": "2025-09-16T21:04:19.942Z",
+  "generated": "2025-09-17T16:29:14.304Z",
   "version": "5.0.2",
   "system": "anonymous_url_management",
   "follows": {
@@ -2888,7 +2888,7 @@
     ]
   },
   "special": {
-    "count": 33,
+    "count": 35,
     "urls": [
       {
         "url": "https://files.catbox.moe/rgtr23.mp4",
@@ -3052,6 +3052,16 @@
       },
       {
         "url": "https://files.catbox.moe/e0hwne.mp4",
+        "source": "catbox_anonymous",
+        "type": "video"
+      },
+      {
+        "url": "https://files.catbox.moe/vvudmx.mp4",
+        "source": "catbox_anonymous",
+        "type": "video"
+      },
+      {
+        "url": "https://files.catbox.moe/ax33ke.mp4",
         "source": "catbox_anonymous",
         "type": "video"
       }
